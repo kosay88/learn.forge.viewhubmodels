@@ -235,6 +235,12 @@ async function getVersionViews(urn, oauthClient, credentials, res) {
         const metadata_graphics = geo_derivatives.children.find(d=>d.type == 'geometry' && 
                                                            d.children.find(r=>r.guid == view.guid)!=null)
         
+
+           const onemetadata = await  derivativesApi.getModelviewMetadata(urn,view.guid,{},oauthClient,credentials) 
+           if(onemetadata.statusCode==200)
+           console.log('one metadata: status:'+ onemetadata.statusCode+ ' top  object name:'+ onemetadata.body.data.objects[0].name) 
+           else
+            console.log('one metadata status:' + onemetadata.statusCode)                                                                        
         return createTreeNode(
             urn +'|' + (metadata_graphics?metadata_graphics.guid:'none'),
             view.name,
@@ -252,6 +258,11 @@ async function getVersionViews(urn, oauthClient, credentials, res) {
 function createTreeNode(_id, _text, _type, _children) {
     return { id: _id, text: _text, type: _type, children: _children };
 }
+
+function flatDeep(arr, d = 1) {
+    return d > 0 ? arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatDeep(val, d - 1) : val), [])
+                 : arr.slice();
+  };
 
 module.exports = router;
 
